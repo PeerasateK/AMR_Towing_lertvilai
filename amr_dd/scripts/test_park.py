@@ -176,7 +176,7 @@ class map_navigation():
             homo_amr_cart = np.array([[np.cos(self.pos_hook), -np.sin(self.pos_hook), 0,-1.4*cos(self.pos_hook)],
                         [np.sin(self.pos_hook), np.cos(self.pos_hook), 0,-1.4*sin(self.pos_hook)],
                         [0, 0, 1,0],
-                        rad_park_cart - self.rzPark[0,0,0,1]])
+                        [0,0,0,1]])
             homo_w_cart = homo_w_amr @ homo_amr_cart
             a = np.array([homo_w_cart[:3][0][:3],homo_w_cart[:3][1][:3],homo_w_cart[:3][2][:3]])
             r = R.from_matrix(a)
