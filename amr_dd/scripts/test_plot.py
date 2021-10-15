@@ -19,8 +19,7 @@ class Visualiser:
         return self.ln
     
     def getYaw(self, pose):
-        quaternion = (pose.orientation.x, pose.orientation.y, pose.orientation.z,
-                pose.orientation.w)
+        quaternion = (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quaternion)
         yaw = euler[2] 
         return yaw   

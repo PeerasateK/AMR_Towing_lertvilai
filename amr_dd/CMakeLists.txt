@@ -173,6 +173,7 @@ catkin_install_python(PROGRAMS
   scripts/test_plot.py
   scripts/reading_laser.py
   scripts/togo.py
+  scripts/test_park.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
