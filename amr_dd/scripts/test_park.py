@@ -155,10 +155,11 @@ class map_navigation():
                 self.cmd_vel.publish(self.move_cmd)
 
         while self.parkState == 1:
-            print(self.pos_hook)
+            speed = abs(self.pos_hook-(pi/2))*0.4
             self.move_cmd.linear.x = 0
-            self.move_cmd.angular.z = 0.1
+            self.move_cmd.angular.z = speed
             self.cmd_vel.publish(self.move_cmd)
+            print(self.pos_hook,speed)
             if self.pos_hook <= -1.570715:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
@@ -184,12 +185,53 @@ class map_navigation():
             self.move_cmd.linear.x = 0.5
             self.move_cmd.angular.z = 0.5/1.4
             self.cmd_vel.publish(self.move_cmd)
-            print(rad_park_cart,rad_park_cart - self.rzPark)
-            if abs(rad_park_cart - self.rzPark) <= 0.01 :
+            distance_angular = abs(rad_park_cart - self.rzPark)
+            speed = 0.5*distance_angular
+            self.move_cmd.linear.x = speed
+            self.move_cmd.angular.z = speed/1.4
+            self.cmd_vel.publish(self.move_cmd)
+            print(rad_park_cart,rad_park_cart - self.rzPark,speed)
+            if abs(rad_park_cart - self.rzPark) <= 0.001:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
                 self.cmd_vel.publish(self.move_cmd)
                 self.parkState = 3
+        
+        while self.parkState == 3:
+            speed = abs(self.pos_hook)*0.5
+            self.move_cmd.linear.x = 0
+            self.move_cmd.angular.z = -speed
+            self.cmd_vel.publish(self.move_cmd)
+            print(self.pos_hook,speed)
+            if self.pos_hook >= 0:
+                self.move_cmd.linear.x = 0
+                self.move_cmd.angular.z = 0
+                self.cmd_vel.publish(self.move_cmd)
+                self.parkState = 4
+        
+        while self.parkState == 4:
+            quaternion = (self.pose_amr[2].x,self.pose_amr[2].y,self.pose_amr[2].z,self.pose_amr[2].w)
+            euler = transformations.euler_from_quaternion(quaternion)
+            yaw_amr = euler[2]
+            homo_w_amr = np.array([[np.cos(yaw_amr), -np.sin(yaw_amr), 0,self.pose_amr[0]],
+                        [np.sin(yaw_amr), np.cos(yaw_amr), 0,self.pose_amr[1]],
+                        [0, 0, 1,0],
+                        [0,0,0,1]])
+            homo_amr_cart = np.array([[np.cos(self.pos_hook), -np.sin(self.pos_hook), 0,-1.4*cos(self.pos_hook)],
+                        [np.sin(self.pos_hook), np.cos(self.pos_hook), 0,-1.4*sin(self.pos_hook)],
+                        [0, 0, 1,0],
+                        [0,0,0,1]])
+            homo_w_cart = homo_w_amr @ homo_amr_cart
+            distance = sqrt(pow((homo_w_cart[:3][0][3])-self.xPark,2)+pow((homo_w_cart[:3][1][3])-self.yPark,2))
+            self.move_cmd.linear.x = -0.18
+            self.move_cmd.angular.z = 0
+            self.cmd_vel.publish(self.move_cmd)
+            print(distance)
+            if distance <= 0.6:
+                self.move_cmd.linear.x = 0
+                self.move_cmd.angular.z = 0
+                self.cmd_vel.publish(self.move_cmd)
+                self.parkState = 5
 
     def moveToGoal(self,xGoal,yGoal,rzGoal):
 
