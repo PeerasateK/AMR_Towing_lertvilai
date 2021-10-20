@@ -11,6 +11,10 @@ from scipy.spatial.transform import Rotation as R
 from math import *
 import time
 
+min_speed_linear = 0.01
+min_speed_rotate = 0.04
+
+
 class map_navigation():
 
     def choose(self):
@@ -60,7 +64,6 @@ class map_navigation():
         elif (choice == '1'):
             park_pose = self.find_position(self.xPark, self.yPark, self.rzPark)
             self.goalReached = self.moveToGoal(park_pose[0], park_pose[1], park_pose[2])
-            time.sleep(2)
             self.ReversePark(self.xPark, self.yPark, self.rzPark)
 
         if (choice!='q'):
@@ -78,9 +81,8 @@ class map_navigation():
             elif (choice == '1'):
                 park_pose = self.find_position(self.xPark, self.yPark, self.rzPark)
                 self.goalReached = self.moveToGoal(park_pose[0], park_pose[1], park_pose[2])
-                time.sleep(2)
+                self.parkState = 0
                 self.ReversePark(self.xPark, self.yPark, self.rzPark)
-                rospy.loginfo("Congratulations!")
 
             if (choice!='q'):
                 if (self.goalReached):
@@ -185,24 +187,24 @@ class map_navigation():
             self.move_cmd.linear.x = 0.5
             self.move_cmd.angular.z = 0.5/1.4
             self.cmd_vel.publish(self.move_cmd)
-            distance_angular = abs(rad_park_cart - self.rzPark)
-            speed = 0.5*distance_angular
+            distance_angular = rad_park_cart - self.rzPark
+            speed = -0.4*distance_angular
             self.move_cmd.linear.x = speed
             self.move_cmd.angular.z = speed/1.4
             self.cmd_vel.publish(self.move_cmd)
             print(rad_park_cart,rad_park_cart - self.rzPark,speed)
-            if abs(rad_park_cart - self.rzPark) <= 0.001:
+            if abs(rad_park_cart - self.rzPark) <= 0.005:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
                 self.cmd_vel.publish(self.move_cmd)
                 self.parkState = 3
         
         while self.parkState == 3:
-            speed = abs(self.pos_hook)*0.5
+            speed = max(abs(self.pos_hook)*0.5,min_speed_rotate)
             self.move_cmd.linear.x = 0
             self.move_cmd.angular.z = -speed
             self.cmd_vel.publish(self.move_cmd)
-            print(self.pos_hook,speed)
+            print(self.pos_hook,max(speed,min_speed_rotate))
             if self.pos_hook >= 0:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
@@ -222,12 +224,22 @@ class map_navigation():
                         [0, 0, 1,0],
                         [0,0,0,1]])
             homo_w_cart = homo_w_amr @ homo_amr_cart
+            homo_w_park  = np.array([[np.cos(rzPark), -np.sin(rzPark), 0,xPark],
+                        [np.sin(rzPark), np.cos(rzPark), 0,yPark],
+                        [0, 0, 1,0],
+                        [0,0,0,1]])
+            homo_park_w = np.linalg.inv(homo_w_park)
+            homo_park_cart = homo_park_w @ homo_w_cart
             distance = sqrt(pow((homo_w_cart[:3][0][3])-self.xPark,2)+pow((homo_w_cart[:3][1][3])-self.yPark,2))
-            self.move_cmd.linear.x = -0.18
-            self.move_cmd.angular.z = 0
+            # speedlinear = -homo_park_cart[:3][0][3]*0.2
+            # speedrotate = -homo_park_cart[:3][1][3]*0.6
+            speedlinear = -0.2
+            speedrotate = self.pos_hook*0.6
+            self.move_cmd.linear.x = speedlinear
+            self.move_cmd.angular.z = speedrotate
             self.cmd_vel.publish(self.move_cmd)
-            print(distance)
-            if distance <= 0.6:
+            print(homo_park_cart[:3][0][3],homo_park_cart[:3][1][3],self.pos_hook,speedrotate)
+            if distance <= 0.2:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
                 self.cmd_vel.publish(self.move_cmd)
