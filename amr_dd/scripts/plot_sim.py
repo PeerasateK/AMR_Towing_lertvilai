@@ -8,6 +8,8 @@ from math import *
 from amr_dd.msg import boundary_cart
 import numpy as np
 from tf import transformations
+from scipy.spatial.transform import Rotation as R
+from math import *
 
 pos_amr = [0,0]
 pos_hook = 0
@@ -57,13 +59,21 @@ def find_pos_cart(pos_amr,Q,pos_hook):
     pos_w_cart.append((homo_w_amr @ homo_amr_cart @ homo_cart_p3)[1][3])
     pos_w_cart.append((homo_w_amr @ homo_amr_cart @ homo_cart_p4)[0][3])
     pos_w_cart.append((homo_w_amr @ homo_amr_cart @ homo_cart_p4)[1][3])
-    # print(pos_hook,yaw_amr)
+    homo_w_cart = homo_w_amr @ homo_amr_cart
+    pose_w_cart = []
+    pose_w_cart.append(homo_w_cart[:3][0][3])
+    pose_w_cart.append(homo_w_cart[:3][1][3])
+    a = np.array([homo_w_cart[:3][0][:3],homo_w_cart[:3][1][:3],homo_w_cart[:3][2][:3]])
+    r = R.from_matrix(a)
+    rad_w_cart = r.as_rotvec()[2]
+    pose_w_cart.append(rad_w_cart)
+    print(pose_w_cart)
     return pos_w_cart
 
 def joint_state_callback(data):
     global pos_hook
     pos_hook = data.position[0]
-    print("Position_hook: {}".format(data.position[0]))
+    # print("Position_hook: {}".format(data.position[0]))
 
 def Position(odom_data):
     global pos_amr

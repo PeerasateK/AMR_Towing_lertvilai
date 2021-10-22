@@ -39,11 +39,11 @@ class map_navigation():
         self.xPark = 5
         self.yPark = -4
         self.rzPark = pi/2
-        self.xPark2 = 14.53
-        self.yPark2 = 9.45
+        self.xPark2 = 14.57
+        self.yPark2 = 9.43
         self.rzPark2 = pi
-        self.xPark3 = 4.6
-        self.yPark3 = 15.72
+        self.xPark3 = 4.77
+        self.yPark3 = 15.68
         self.rzPark3 = -pi/4
 
         self.min_speed_linear = 0.08
@@ -279,15 +279,18 @@ class map_navigation():
             # -----Solution1------
             speedlinear = -0.2
             speedrotate = 0
-            omega = speedlinear/3
-            omega2 = speedlinear/1.5
+            omega = speedlinear/2     #3
+            omega2 = speedlinear/1.5    #1.5
             a = np.array([homo_park_cart[:3][0][:3],homo_park_cart[:3][1][:3],homo_park_cart[:3][2][:3]])
             r = R.from_matrix(a)
             rad_park_cart = r.as_rotvec()[2]
-            error = 0.01
+            error = 0.0
             if homo_park_cart[:3][1][3] > error :      #right situation
                 speedrotate = omega
                 self.stateReverse = "R A"
+                if self.pos_hook > 0.2:
+                    speedrotate = 0
+                    self.stateReverse = "R A fix"
                 if rad_park_cart > 0:
                     speedrotate = -omega2
                     self.stateReverse = "R D"
@@ -297,6 +300,9 @@ class map_navigation():
             elif homo_park_cart[:3][1][3] < -error:      #left situation
                 speedrotate = -omega
                 self.stateReverse = "L A"
+                if self.pos_hook < -0.2:
+                    speedrotate = 0
+                    self.stateReverse = "L A fix"
                 if rad_park_cart < 0:
                     speedrotate = omega2
                     self.stateReverse = "L D"
@@ -339,8 +345,8 @@ class map_navigation():
             self.move_cmd.linear.x = speedlinear
             self.move_cmd.angular.z = speedrotate
             self.cmd_vel.publish(self.move_cmd)
-            print(homo_park_cart[:3][1][3],self.pos_hook,rad_park_cart,speedrotate,self.stateReverse)
-            if distance <= 0.1:
+            print(homo_park_cart[:3][0][3],homo_park_cart[:3][1][3],self.pos_hook,rad_park_cart,speedrotate,self.stateReverse)
+            if homo_park_cart[:3][0][3] <= 0.01:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
                 self.cmd_vel.publish(self.move_cmd)
