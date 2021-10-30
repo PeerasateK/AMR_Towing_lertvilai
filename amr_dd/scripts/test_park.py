@@ -141,6 +141,32 @@ class map_navigation():
         pose_park_p1.append(r.as_rotvec()[2])
         return pose_park_p1
 
+    def find_pose_park_cart(self,xPark,yPark,rzPark):
+        quaternion = (self.pose_amr[2].x,self.pose_amr[2].y,self.pose_amr[2].z,self.pose_amr[2].w)
+        euler = transformations.euler_from_quaternion(quaternion)
+        yaw_amr = euler[2]
+        homo_w_amr = np.array([[np.cos(yaw_amr), -np.sin(yaw_amr), 0,self.pose_amr[0]],
+                    [np.sin(yaw_amr), np.cos(yaw_amr), 0,self.pose_amr[1]],
+                    [0, 0, 1,0],
+                    [0,0,0,1]])
+        homo_amr_cart = np.array([[np.cos(self.pos_hook), -np.sin(self.pos_hook), 0,-1.4*cos(self.pos_hook)],
+                    [np.sin(self.pos_hook), np.cos(self.pos_hook), 0,-1.4*sin(self.pos_hook)],
+                    [0, 0, 1,0],
+                    [0,0,0,1]])
+        homo_w_cart = homo_w_amr @ homo_amr_cart
+        homo_w_park  = np.array([[np.cos(rzPark), -np.sin(rzPark), 0,xPark],
+                    [np.sin(rzPark), np.cos(rzPark), 0,yPark],
+                    [0, 0, 1,0],
+                    [0,0,0,1]])
+        homo_park_w = np.linalg.inv(homo_w_park)
+        homo_park_cart = homo_park_w @ homo_w_cart
+        a = np.array([homo_park_cart[:3][0][:3],homo_park_cart[:3][1][:3],homo_park_cart[:3][2][:3]])
+        r = R.from_matrix(a)
+        x_park_cart = homo_park_cart[:3][0][3]
+        y_park_cart = homo_park_cart[:3][1][3]
+        rad_park_cart = r.as_rotvec()[2]
+        return x_park_cart, y_park_cart, rad_park_cart
+
     def shutdown(self):
         # stop robot
         rospy.loginfo("Quit program")
@@ -167,35 +193,13 @@ class map_navigation():
                 self.parkState = 1
 
         while self.parkState == 1:
-            homo_w_park  = np.array([[np.cos(rzPark), -np.sin(rzPark), 0,xPark],
-                        [np.sin(rzPark), np.cos(rzPark), 0,yPark],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_park_w = np.linalg.inv(homo_w_park)
-            #find pose world cart
-            quaternion = (self.pose_amr[2].x,self.pose_amr[2].y,self.pose_amr[2].z,self.pose_amr[2].w)
-            euler = transformations.euler_from_quaternion(quaternion)
-            yaw_amr = euler[2]
-            homo_w_amr = np.array([[np.cos(yaw_amr), -np.sin(yaw_amr), 0,self.pose_amr[0]],
-                        [np.sin(yaw_amr), np.cos(yaw_amr), 0,self.pose_amr[1]],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_amr_cart = np.array([[np.cos(self.pos_hook), -np.sin(self.pos_hook), 0,-1.4*cos(self.pos_hook)],
-                        [np.sin(self.pos_hook), np.cos(self.pos_hook), 0,-1.4*sin(self.pos_hook)],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_w_cart = homo_w_amr @ homo_amr_cart
-            homo_park_cart = homo_park_w @ homo_w_cart
-            # a = np.array([homo_park_cart[:3][0][:3],homo_park_cart[:3][1][:3],homo_park_cart[:3][2][:3]])
-            # r = R.from_matrix(a)
-            # rad_park_cart = r.as_rotvec()[2]
-
-            rad_park_cart = atan2(homo_park_cart[:3][1][3],homo_park_cart[:3][0][3])
+            x_park_cart,y_park_cart,rad_park_cart = self.find_pose_park_cart(xPark, yPark, rzPark)
+            rad = atan2(y_park_cart, x_park_cart)
             self.move_cmd.linear.x = 0.18
             self.move_cmd.angular.z = 0
             self.cmd_vel.publish(self.move_cmd)
-            print(rad_park_cart)
-            if rad_park_cart <= 0:
+            print(rad)
+            if rad <= 0:
                 self.parkState = 2
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
@@ -215,28 +219,13 @@ class map_navigation():
                 self.parkState = 3
         
         while self.parkState == 3:
-            quaternion = (self.pose_amr[2].x,self.pose_amr[2].y,self.pose_amr[2].z,self.pose_amr[2].w)
-            euler = transformations.euler_from_quaternion(quaternion)
-            yaw_amr = euler[2]
-            homo_w_amr = np.array([[np.cos(yaw_amr), -np.sin(yaw_amr), 0,self.pose_amr[0]],
-                        [np.sin(yaw_amr), np.cos(yaw_amr), 0,self.pose_amr[1]],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_amr_cart = np.array([[np.cos(self.pos_hook), -np.sin(self.pos_hook), 0,-1.4*cos(self.pos_hook)],
-                        [np.sin(self.pos_hook), np.cos(self.pos_hook), 0,-1.4*sin(self.pos_hook)],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_w_cart = homo_w_amr @ homo_amr_cart
-            a = np.array([homo_w_cart[:3][0][:3],homo_w_cart[:3][1][:3],homo_w_cart[:3][2][:3]])
-            r = R.from_matrix(a)
-            rad_w_cart = r.as_rotvec()[2]
-            distance_angular = rad_w_cart - rzPark
-            speed = max(abs(0.15*distance_angular),0.08)
+            x_park_cart,y_park_cart,rad_park_cart = self.find_pose_park_cart(xPark, yPark, rzPark)
+            speed = max(abs(0.15*rad_park_cart),0.1)
             self.move_cmd.linear.x = speed
             self.move_cmd.angular.z = speed/1.4
             self.cmd_vel.publish(self.move_cmd)
-            print(rad_w_cart,rad_w_cart - rzPark,speed,speed/1.4)
-            if abs(rad_w_cart - rzPark) <= 0.005:
+            print(rad_park_cart,speed,speed/1.4)
+            if abs(rad_park_cart) <= 0.005:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
                 self.cmd_vel.publish(self.move_cmd)
@@ -256,60 +245,40 @@ class map_navigation():
                 self.parkState = 5
         
         while self.parkState == 5:
-            quaternion = (self.pose_amr[2].x,self.pose_amr[2].y,self.pose_amr[2].z,self.pose_amr[2].w)
-            euler = transformations.euler_from_quaternion(quaternion)
-            yaw_amr = euler[2]
-            homo_w_amr = np.array([[np.cos(yaw_amr), -np.sin(yaw_amr), 0,self.pose_amr[0]],
-                        [np.sin(yaw_amr), np.cos(yaw_amr), 0,self.pose_amr[1]],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_amr_cart = np.array([[np.cos(self.pos_hook), -np.sin(self.pos_hook), 0,-1.4*cos(self.pos_hook)],
-                        [np.sin(self.pos_hook), np.cos(self.pos_hook), 0,-1.4*sin(self.pos_hook)],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_w_cart = homo_w_amr @ homo_amr_cart
-            homo_w_park  = np.array([[np.cos(rzPark), -np.sin(rzPark), 0,xPark],
-                        [np.sin(rzPark), np.cos(rzPark), 0,yPark],
-                        [0, 0, 1,0],
-                        [0,0,0,1]])
-            homo_park_w = np.linalg.inv(homo_w_park)
-            homo_park_cart = homo_park_w @ homo_w_cart
-            distance = sqrt(pow((homo_w_cart[:3][0][3])-self.xPark,2)+pow((homo_w_cart[:3][1][3])-self.yPark,2))
+            x_park_cart,y_park_cart,rad_park_cart = self.find_pose_park_cart(xPark, yPark, rzPark)
+            distance = sqrt(pow(x_park_cart,2)+pow(y_park_cart,2))
 
             # -----Solution1------
             speedlinear = -0.2
             speedrotate = 0
             omega = speedlinear/2     #3
             omega2 = speedlinear/1.5    #1.5
-            a = np.array([homo_park_cart[:3][0][:3],homo_park_cart[:3][1][:3],homo_park_cart[:3][2][:3]])
-            r = R.from_matrix(a)
-            rad_park_cart = r.as_rotvec()[2]
             error = 0.0
-            if homo_park_cart[:3][1][3] > error :      #right situation
+            if y_park_cart > error :      #right situation
                 speedrotate = omega
                 self.stateReverse = "R A"
                 if self.pos_hook > 0.2:
                     speedrotate = 0
                     self.stateReverse = "R A fix"
-                if rad_park_cart > 0:
+                if rad_park_cart > -0.1:
                     speedrotate = -omega2
                     self.stateReverse = "R D"
                     if self.pos_hook < 0:
                         speedrotate = self.pos_hook*0.6
                         self.stateReverse = "R D fix"
-            elif homo_park_cart[:3][1][3] < -error:      #left situation
+            elif y_park_cart < -error:      #left situation
                 speedrotate = -omega
                 self.stateReverse = "L A"
                 if self.pos_hook < -0.2:
                     speedrotate = 0
                     self.stateReverse = "L A fix"
-                if rad_park_cart < 0:
+                if rad_park_cart < 0.1:
                     speedrotate = omega2
                     self.stateReverse = "L D"
                     if self.pos_hook > 0:
                         speedrotate = self.pos_hook*0.6
                         self.stateReverse = "L D fix"
-            elif homo_park_cart[:3][1][3] <= error and homo_park_cart[:3][1][3] >= -error:
+            elif y_park_cart <= error and y_park_cart >= -error:
                 speedrotate = self.pos_hook*0.6
                 self.stateReverse = "center"
 
@@ -345,12 +314,27 @@ class map_navigation():
             self.move_cmd.linear.x = speedlinear
             self.move_cmd.angular.z = speedrotate
             self.cmd_vel.publish(self.move_cmd)
-            print(homo_park_cart[:3][0][3],homo_park_cart[:3][1][3],self.pos_hook,rad_park_cart,speedrotate,self.stateReverse)
-            if homo_park_cart[:3][0][3] <= 0.01:
+            print(x_park_cart,y_park_cart,self.pos_hook,rad_park_cart,speedrotate,self.stateReverse)
+            if x_park_cart <= 0.01:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
                 self.cmd_vel.publish(self.move_cmd)
                 self.parkState = 6
+
+        while self.parkState == 6:
+            direct = 1
+            if self.pos_hook < 0:
+                direct = -1
+            speedrotate = max(abs(self.pos_hook*0.6),self.min_speed_rotate)*direct
+            self.move_cmd.linear.x = 0
+            self.move_cmd.angular.z = speedrotate
+            self.cmd_vel.publish(self.move_cmd)
+            # print(self.pos_hook,speedrotate)
+            if abs(self.pos_hook) <= 0.001:
+                self.move_cmd.linear.x = 0
+                self.move_cmd.angular.z = 0
+                self.cmd_vel.publish(self.move_cmd)
+                self.parkState = 7
 
     def moveToGoal(self,xGoal,yGoal,rzGoal):
 
