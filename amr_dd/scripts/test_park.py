@@ -253,14 +253,14 @@ class map_navigation():
             speedrotate = 0
             omega = speedlinear/2     #3
             omega2 = speedlinear/1.5    #1.5
-            error = 0.0
+            error = 0
             if y_park_cart > error :      #right situation
                 speedrotate = omega
                 self.stateReverse = "R A"
-                if self.pos_hook > 0.2:
-                    speedrotate = 0
+                if self.pos_hook > y_park_cart: #0.2
+                    speedrotate = -omega2
                     self.stateReverse = "R A fix"
-                if rad_park_cart > -0.1:
+                if rad_park_cart > 0.05:
                     speedrotate = -omega2
                     self.stateReverse = "R D"
                     if self.pos_hook < 0:
@@ -269,10 +269,10 @@ class map_navigation():
             elif y_park_cart < -error:      #left situation
                 speedrotate = -omega
                 self.stateReverse = "L A"
-                if self.pos_hook < -0.2:
-                    speedrotate = 0
+                if self.pos_hook < y_park_cart: #-0.2
+                    speedrotate = omega2
                     self.stateReverse = "L A fix"
-                if rad_park_cart < 0.1:
+                if rad_park_cart < -0.05:
                     speedrotate = omega2
                     self.stateReverse = "L D"
                     if self.pos_hook > 0:
@@ -314,7 +314,7 @@ class map_navigation():
             self.move_cmd.linear.x = speedlinear
             self.move_cmd.angular.z = speedrotate
             self.cmd_vel.publish(self.move_cmd)
-            print(x_park_cart,y_park_cart,self.pos_hook,rad_park_cart,speedrotate,self.stateReverse)
+            print(x_park_cart,y_park_cart,self.pos_hook,rad_park_cart,self.stateReverse)
             if x_park_cart <= 0.01:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
