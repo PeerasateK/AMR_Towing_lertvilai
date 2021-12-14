@@ -1,0 +1,256 @@
+<?xml version='1.0'?>
+
+<robot name="amr200" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find amr200)/models/materials.xacro" />
+    <xacro:include filename="$(find amr200)/models/amr200.gazebo" />
+    <xacro:include filename="$(find amr200)/models/macros.xacro" />
+    <xacro:include filename="$(find amr200)/urdf/_d435.urdf.xacro" />
+    
+    <link name="base_footprint"/>
+
+    <joint name="base_joint" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="chassis"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+    </joint>
+  
+    <link name='chassis'>
+        <!-- pose and inertial -->
+        <pose>0 0 0.166 0 0 0</pose>
+        <inertial>
+            <mass value="120"/>
+            <origin rpy="0 0 0" xyz="0 0 0.166"/>
+            <inertia ixx="0.0395416666667" ixy="0" ixz="0" iyy="0.106208333333" iyz="0" izz="0.106208333333"/>
+        </inertial>
+
+        <!-- body -->
+        <collision name='chassis_collision'>
+            <geometry>
+                <box size="0.94 0.6 0.26"/>
+            </geometry>
+        </collision>
+        <visual name='chassis_visual'>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.94 0.6 0.26"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        
+        <!-- caster -->
+        <xacro:caster name="caster_TL" origin_xyz="0.42 0.25 -0.113"/>
+        <xacro:caster name="caster_TR" origin_xyz="0.42 -0.25 -0.113"/>
+        <xacro:caster name="caster_BL" origin_xyz="-0.42 0.25 -0.113"/>
+        <xacro:caster name="caster_BR" origin_xyz="-0.42 -0.25 -0.113"/>
+
+        <collision name='poll_collision'>
+            <origin rpy="0 0 0" xyz="0 0 0.18"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.1"/>
+            </geometry>
+        </collision>
+        <visual name='poll_visual'>
+            <origin rpy="0 0 0" xyz="0 0 0.18"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.1"/>
+            </geometry>
+        </visual>
+
+    </link>
+
+    <!-- Hook -->
+    <link name="hook">
+        <inertial>
+            <mass value="0.5"/>
+            <origin rpy="0 0 0" xyz="-0.313 0 0.18"/>
+            <inertia ixx="0.0395416666667" ixy="0" ixz="0" iyy="0.106208333333" iyz="0" izz="0.106208333333"/>
+        </inertial>
+        <collision name='hook1_collision'>
+            <origin rpy="0 0 0" xyz="-0.313 0 0.18"/>
+            <geometry>
+                <box size="0.626 0.05 0.05"/>
+            </geometry>
+        </collision>
+        <visual name='hook1_visual'>
+            <origin rpy="0 0 0" xyz="-0.313 0 0.18"/>
+            <geometry>
+                <box size="0.626 0.05 0.05"/>
+            </geometry>
+        </visual>
+        <collision name='hook2_collision'>
+            <origin rpy="0 0 0" xyz="-0.651 0 0.0765"/>
+            <geometry>
+                <box size="0.05 0.05 0.257"/>
+            </geometry>
+        </collision>
+        <visual name='hook2_visual'>
+            <origin rpy="0 0 0" xyz="-0.651 0 0.0765"/>
+            <geometry>
+                <box size="0.05 0.05 0.257"/>
+            </geometry>
+        </visual>
+        <collision name='hook3_collision'>
+            <origin rpy="0 0 0" xyz="-0.751 0 -0.027"/>
+            <geometry>
+                <box size="0.15 0.05 0.05"/>
+            </geometry>
+        </collision>
+        <visual name='hook3_visual'>
+            <origin rpy="0 0 0" xyz="-0.751 0 -0.027"/>
+            <geometry>
+                <box size="0.15 0.05 0.05"/>
+            </geometry>
+        </visual>
+    </link>
+    <!-- AMR Wheel -->
+    <xacro:link_wheel name="left_wheel" radius="0.0782" />
+    <xacro:link_wheel name="right_wheel" radius="0.0782"/>
+
+
+    <!-- Cart -->
+    <link name="cart">
+        <inertial>
+            <mass value="100"/>
+            <origin rpy="0 0 0" xyz="-1 0 0"/>
+            <inertia ixx="0.0395416666667" ixy="0" ixz="0" iyy="0.106208333333" iyz="0" izz="0.106208333333"/>
+        </inertial>
+
+        <!-- body -->
+        <collision name='cart_collision'>
+            <origin rpy="0 0 0" xyz="-1 0 0"/>
+            <geometry>
+                <box size="2 0.930 0.05"/>
+            </geometry>
+        </collision>
+        <visual name='cart_visual'>
+            <origin rpy="0 0 0" xyz="-1 0 0"/>
+            <geometry>
+                <box size="2 0.930 0.05"/>
+            </geometry>
+        </visual>
+        <collision name='wall1_collision'>
+            <origin rpy="0 0 0" xyz="-0.025 0 0.775"/>
+            <geometry>
+                <box size="0.05 0.93 1.5"/>
+            </geometry>
+        </collision>
+        <visual name='wall1_visual'>
+            <origin rpy="0 0 0" xyz="-0.025 0 0.775"/>
+            <geometry>
+                <box size="0.05 0.93 1.5"/>
+            </geometry>
+        </visual>
+        <collision name='wall2_collision'>
+            <origin rpy="0 0 0" xyz="-1.975 0 0.775"/>
+            <geometry>
+                <box size="0.05 0.93 1.5"/>
+            </geometry>
+        </collision>
+        <visual name='wall2_visual'>
+            <origin rpy="0 0 0" xyz="-1.975 0 0.775"/>
+            <geometry>
+                <box size="0.05 0.93 1.5"/>
+            </geometry>
+        </visual>
+        <collision name='wall3_collision'>
+            <origin rpy="0 0 0" xyz="-1 0.44 0.775"/>
+            <geometry>
+                <box size="2 0.05 1.5"/>
+            </geometry>
+        </collision>
+        <visual name='wall3_visual'>
+            <origin rpy="0 0 0" xyz="-1 0.44 0.775"/>
+            <geometry>
+                <box size="2 0.05 1.5"/>
+            </geometry>
+        </visual>
+        <collision name='wall4_collision'>
+            <origin rpy="0 0 0" xyz="-1 -0.44 0.775"/>
+            <geometry>
+                <box size="2 0.05 1.5"/>
+            </geometry>
+        </collision>
+        <visual name='wall4_visual'>
+            <origin rpy="0 0 0" xyz="-1 -0.44 0.775"/>
+            <geometry>
+                <box size="2 0.05 1.5"/>
+            </geometry>
+        </visual>
+        
+        <!-- caster -->
+        <xacro:caster name="cart_caster_F" origin_xyz="-1.95 0 -0.008"/>
+        <xacro:caster name="cart_caster_B" origin_xyz="-0.05 0 -0.008"/>
+        <!-- <xacro:caster name="cart_caster_BL" origin_xyz="-2.776 0.415 -0.116"/>
+        <xacro:caster name="cart_caster_BR" origin_xyz="-2.776 -0.415 -0.116"/> -->
+    </link>
+    <!-- Cart Wheel -->
+    <xacro:link_wheel name="left_cart_wheel" radius="0.08" />
+    <xacro:link_wheel name="right_cart_wheel" radius="0.08"/>
+
+
+    <!-- Sensor -->
+    <xacro:laser name="sensor_laser_front"/>
+    <!-- <xacro:laser name="sensor_laser_back"/> -->
+
+    <xacro:sensor_d435 name="camera" topics_ns="camera" parent="chassis" publish_pointcloud="true">
+        <origin xyz="0.48 0 -0.07" rpy="0 -0.2 0" />
+    </xacro:sensor_d435>  
+    
+
+    <!-- Joint -->
+    <xacro:joint_wheel name="joint_left_wheel" origin_xyz="0 0.248 -0.0878" parent="chassis" child="left_wheel"/>
+    <xacro:joint_wheel name="joint_right_wheel" origin_xyz="0 -0.248 -0.0878" parent="chassis" child="right_wheel"/>
+    <joint type="revolute" name="joint_towing">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <child link="hook"/>
+            <parent link="chassis"/>
+            <axis rpy="0 0 0" xyz="0 0 1"/>
+            <!-- <limit effort="10000" velocity="1000" lower="-0.52359" upper="0.52359"/> -->
+            <!-- <limit effort="10000" velocity="1000" lower="-1.047197551" upper="1.047197551"/> -->
+            <limit effort="10000" velocity="1000" lower="-1.5807" upper="1.5807"/>
+            <!-- <limit effort="10000" velocity="1000" lower="-2.094395" upper="2.094395"/> -->
+            <joint_properties damping="1.0" friction="0"/>
+        </joint>
+    <!-- <joint type="revolute" name="joint_hook">
+            <origin rpy="0 0 0" xyz="-0.826 0 -0.105"/>
+            <child link="cart"/>
+            <parent link="hook"/>
+            <axis rpy="0 0 0" xyz="0 1 0"/>
+            <limit effort="10000" velocity="1000" lower="-1.5707" upper="1.5707"/>
+            <joint_properties damping="1.0" friction="1.0"/>
+        </joint> -->
+    <!-- <joint type="continuous" name="joint_hook">
+            <origin rpy="0 0 0" xyz="-0.826 0 -0.105"/>
+            <child link="cart"/>
+            <parent link="hook"/>
+            <axis rpy="0 0 0" xyz="0 1 0"/>
+        </joint> -->
+    <joint type="fixed" name="joint_hook">
+            <origin rpy="0 0 0" xyz="-0.826 0 -0.105"/>
+            <child link="cart"/>
+            <parent link="hook"/>
+            <axis rpy="0 0 0" xyz="0 0 0"/>
+        </joint>
+    <xacro:joint_wheel name="joint_left_cart_wheel" origin_xyz="-1 0.385 0.019" parent="cart" child="left_cart_wheel"/>
+    <xacro:joint_wheel name="joint_right_cart_wheel" origin_xyz="-1 -0.385 0.019" parent="cart" child="right_cart_wheel"/>
+    <transmission name="towing_tran">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint type="revolute" name="joint_towing">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor_towing">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    <joint name="joint_sensor_laser_front" type="fixed">
+        <origin xyz="0.47 0 0.13" rpy="0 0 0"/>
+        <parent link="chassis"/>
+        <child link="sensor_laser_front"/>
+    </joint>
+    <!-- <joint name="joint_sensor_laser_back" type="fixed">
+        <origin xyz="-0.47 0.25 0.13" rpy="0 0 3.14"/>
+        <parent link="chassis"/>
+        <child link="sensor_laser_back"/>
+    </joint> -->
+</robot>

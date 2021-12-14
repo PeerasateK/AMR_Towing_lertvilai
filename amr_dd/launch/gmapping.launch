@@ -1,3 +1,28 @@
+<!-- <?xml version="1.0"?>
+<launch>
+	<node pkg="rviz" type="rviz" name="rviz" required="true"
+                args="-d $(find amr_dd)/rviz/mapping.rviz"/>
+
+    <remap from="scan" to="scan_multi" />
+    <remap from="map" to="mapping" />
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping">
+        <param name="throttle_scans" type="int" value="1" />
+        <param name="lstep" type="double" value="0.025" />
+        <param name="astep" type="double" value="0.025" />
+        <param name="delta" type="double" value="0.03" />
+        <param name="srr" type="double" value="0.2" />
+        <param name="srt" type="double" value="0.2" />
+        <param name="str" type="double" value="0.2" />
+        <param name="stt" type="double" value="0.1" />
+        <param name="xmin" type="double" value="-5.0" />
+        <param name="ymin" type="double" value="-5.0" />
+        <param name="xmax" type="double" value="5.0" />
+        <param name="ymax" type="double" value="5.0" />
+        <param name="map_frame" type="string" value="mapping"/>
+    </node>
+
+</launch> -->
+
 <launch>
     <arg name="scan_topic" default="/amr_dd/laser/scanF" />
     <arg name="base_frame" default="base_footprint" />
@@ -6,7 +31,7 @@
     <param name="robot_description" command="$(find xacro)/xacro '$(find amr_dd)/models/amr_dd.xacro'"/>
 
     <node pkg="rviz" type="rviz" name="rviz" required="true"
-                args="-d $(find amr_dd)/rviz/gmapping.rviz"/>
+                args="-d $(find amr_dd)/rviz/mapping.rviz"/>
 
     <param name="use_sim_time" value="true"/>
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
@@ -27,24 +52,12 @@
         <param name="srt" value="0.2"/>
         <param name="str" value="0.1"/>
         <param name="stt" value="0.2"/>
-        <!-- <param name="linearUpdate" value="1.0"/>
-        <param name="angularUpdate" value="0.5"/>
-        <param name="temporalUpdate" value="3.0"/>
-        <param name="resampleThreshold" value="0.5"/>
-        <param name="particles" value="30"/>
-        regular -->
         <param name="linearUpdate" value="0.5"/>
         <param name="angularUpdate" value="0.436"/>
         <param name="temporalUpdate" value="-1.0"/>
         <param name="resampleThreshold" value="0.5"/>
         <param name="particles" value="80"/>
-
-        <!-- <param name="xmin" value="-50.0"/>
-        <param name="ymin" value="-50.0"/>
-        <param name="xmax" value="50.0"/>
-        <param name="ymax" value="50.0"/>
-        make the starting size small for benefit of the client's memmory -->
-
+        
         <param name="xmin" value="-1.0"/>
         <param name="ymin" value="-1.0"/>
         <param name="xmax" value="1.0"/>

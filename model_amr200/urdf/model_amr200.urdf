@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="amr200">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.591826000309447 -0.557247413980446 0.549054203761212"
+        rpy="0 0 0" />
+      <mass
+        value="9.6780654312556" />
+      <inertia
+        ixx="0.302094300078041"
+        ixy="0.000521782016370454"
+        ixz="2.82277935969688E-05"
+        iyy="0.0999603536554847"
+        iyz="0.00313893989964867"
+        izz="0.382281142814925" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="frame">
+    <inertial>
+      <origin
+        xyz="-0.0671935262415717 0.0403329385652428 -0.0695871087885918"
+        rpy="0 0 0" />
+      <mass
+        value="27.9333637848343" />
+      <inertia
+        ixx="0.95649420593279"
+        ixy="-1.78483571525282E-05"
+        ixz="-0.0184023024722659"
+        iyy="0.656181689126027"
+        iyz="-2.12395692074284E-06"
+        izz="0.442112015955037" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/frame.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/frame.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="frame"
+    type="fixed">
+    <origin
+      xyz="0.631858868867909 -0.61588363481978 0.731952395115812"
+      rpy="1.57079632679493 1.5707963267949 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="frame" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="LW">
+    <inertial>
+      <origin
+        xyz="-0.0195390545275618 -1.16657794535513E-11 -9.24837983973248E-12"
+        rpy="0 0 0" />
+      <mass
+        value="0.49539547892276" />
+      <inertia
+        ixx="0.00194297088556916"
+        ixy="-6.13209093222297E-14"
+        ixz="-4.43946267550625E-14"
+        iyy="0.00102758645982069"
+        iyz="-3.23940227708641E-07"
+        izz="0.0010277599239662" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/LW.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/LW.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="LWREV"
+    type="continuous">
+    <!-- xyz="0.82086 -0.54013 0.47375" -->
+    <origin
+      xyz="0.82086 -0.54013 0.46375"
+      rpy="-1.9564 0 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="LW" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="RW">
+    <inertial>
+      <origin
+        xyz="0.0185609454724386 -1.16702203456498E-11 -9.25326482104083E-12"
+        rpy="0 0 0" />
+      <mass
+        value="0.495395478922763" />
+      <inertia
+        ixx="0.00194297088556917"
+        ixy="-6.13218757447502E-14"
+        ixz="-4.43946060700397E-14"
+        iyy="0.0010275864598207"
+        iyz="-3.23940227706256E-07"
+        izz="0.00102775992396621" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/RW.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/RW.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="RWREV"
+    type="continuous">
+    <origin
+      xyz="0.324758868867922 -0.540127106828764 0.46375239664199"
+      rpy="-1.20140734527068 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="RW" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="joint">
+    <inertial>
+      <origin
+        xyz="6.66133814775094E-16 -0.0141150868372225 -0.0422416115938201"
+        rpy="0 0 0" />
+      <mass
+        value="1.93083219726693" />
+      <inertia
+        ixx="0.00186476383370406"
+        ixy="-3.78971171132593E-18"
+        ixz="-1.20192444656853E-19"
+        iyy="0.00145056434720969"
+        iyz="4.76575126821083E-19"
+        izz="0.00324241706968352" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/joint.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.407843137254902 0.419607843137255 0.431372549019608 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/joint.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="jointC"
+    type="revolute">
+    <origin
+      xyz="0.59186 -0.53903 0.87895"
+      rpy="0 0 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="joint" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="Towing_link">
+    <inertial>
+      <origin
+        xyz="0.0405208382305904 -0.20344303021176 0.0340649066715726"
+        rpy="0 0 0" />
+      <mass
+        value="11.9422853939699" />
+      <inertia
+        ixx="0.0922719845531409"
+        ixy="-0.016907604218614"
+        ixz="1.83382601427536E-06"
+        iyy="0.0650973819142662"
+        iyz="-7.66167201847402E-06"
+        izz="0.137728691570108" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/Towing_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://model_amr200/meshes/Towing_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Towing_link"
+    type="fixed">
+    <origin
+      xyz="0.033700000000024 -0.6825 -0.0550000000000008"
+      rpy="1.5707963267949 1.24515578310547 -1.57079632679486" />
+    <parent
+      link="joint" />
+    <child
+      link="Towing_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <gazebo>
+      <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
+          <legacyMode>true</legacyMode>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>20</updateRate>
+          <leftJoint>LWREV</leftJoint>
+          <rightJoint>RWREV</rightJoint>
+          <wheelSeparation>0.4961</wheelSeparation>
+          <wheelDiameter>0.1564</wheelDiameter>
+          <wheelAcceleration>1.0</wheelAcceleration>
+          <wheelTorque>20</wheelTorque>
+          <commandTopic>cmd_vel</commandTopic>
+          <odometryTopic>odom</odometryTopic>
+          <odometryFrame>odom</odometryFrame>
+          <robotBaseFrame>base_link</robotBaseFrame>
+          <odometrySource>world</odometrySource>
+          <publishTf>true</publishTf>
+          <publishWheelTF>true</publishWheelTF>
+          <publishOdom>true</publishOdom>
+          <publishOdomTF>true</publishOdomTF>
+          <publishWheelJointState>true</publishWheelJointState>
+      </plugin>
+  </gazebo>
+</robot>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+    <!-- Arguments -->
+    <!-- <arg name="map_file" default="$(find amr200)/maps/fix_test_map.yaml"/>
+    <arg name="open_rviz" default="true"/> -->
+    <!-- <arg name="move_forward_only" default="false"/> -->
+
+    <!-- Map server -->
+    <node pkg="rqt_multiplot" name="plot_sim" type="rqt_multiplot"/>
+    
+    <!-- recieve pos hook, process H, sent point -->
+    <node pkg="amr200" name="process_plot" type="plot_sim.py" output="screen"/>
+    <node pkg="amr200" name="boundary_plot" type="boundary_graph.py" />
+
+</launch>

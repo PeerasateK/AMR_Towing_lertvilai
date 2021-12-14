@@ -314,7 +314,8 @@ class map_navigation():
             self.move_cmd.linear.x = speedlinear
             self.move_cmd.angular.z = speedrotate
             self.cmd_vel.publish(self.move_cmd)
-            print(x_park_cart,y_park_cart,self.pos_hook,rad_park_cart,self.stateReverse)
+            # print(x_park_cart,y_park_cart,self.pos_hook,rad_park_cart,self.stateReverse)
+            print(x_park_cart,y_park_cart,rad_park_cart)
             if x_park_cart <= 0.01:
                 self.move_cmd.linear.x = 0
                 self.move_cmd.angular.z = 0
