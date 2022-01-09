@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 import cv2
 import numpy as np
 import trimesh
 from matplotlib.tri import Triangulation
-import matplotlib.pyplot as plt
 
 import rospy
 from nav_msgs.msg import OccupancyGrid
@@ -68,12 +67,8 @@ class MapConverter(object):
         Get occupied regions of map
         """
         map_array = map_array.astype(np.uint8)
-        _, thresh_map = cv2.threshold(
-                map_array, self.threshold, 100, cv2.THRESH_BINARY)
-        # plt.imshow(cv2.cvtColor(map_array,cv2.COLOR_GRAY2RGB),cmap='gray')
-        # plt.show()
-        images, contours, hierarchy = cv2.findContours(
-                thresh_map, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+        _, thresh_map = cv2.threshold(map_array, self.threshold, 100, cv2.THRESH_BINARY)
+        contours, hierarchy = cv2.findContours(thresh_map.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
         # Using cv2.RETR_CCOMP classifies external contours at top level of
         # hierarchy and interior contours at second level.  
         # If the whole space is enclosed by walls RETR_EXTERNAL will exclude

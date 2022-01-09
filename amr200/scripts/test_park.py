@@ -30,14 +30,14 @@ class map_navigation():
 
     def __init__(self):
         # declare the coordinates of interest
-        self.xHome  = 0
-        self.yHome  = 0
-        self.rzHome = 0
+        self.xHome  = 6.8721
+        self.yHome  = 9.5645
+        self.rzHome = pi
         self.xGo  = 0
         self.yGo  = 0
         self.rzGo = 0
-        self.xPark = 5
-        self.yPark = -4
+        self.xPark = 49.582
+        self.yPark = 7.237
         self.rzPark = pi/2
         self.xPark2 = 14.57
         self.yPark2 = 9.43
@@ -56,6 +56,7 @@ class map_navigation():
         self.pos_hook = 0
         self.parkState = 0
         self.goalReached = False
+        self.timer = 0
 
         # initiliaze
         rospy.init_node('map_navigation', anonymous=False)
@@ -63,12 +64,17 @@ class map_navigation():
         rospy.Subscriber("/odom",Odometry,self.position_amr)
         choice = self.choose()
         if (choice == '0'):
+            intial_timer = self.timer
             self.goalReached = self.moveToGoal(self.xHome, self.yHome, self.rzHome)
-
+            totaltime = self.timer - intial_timer
+            print("Time used : {} secs".format(totaltime))
         elif (choice == '1'):
+            intial_timer = self.timer
             park_pose = self.find_position(self.xPark, self.yPark, self.rzPark)
             self.goalReached = self.moveToGoal(park_pose[0], park_pose[1], park_pose[2])
             self.ReversePark(self.xPark, self.yPark, self.rzPark)
+            totaltime = self.timer - intial_timer
+            print("Time used : {} secs".format(totaltime))
         
         elif (choice == '2'):
             park_pose = self.find_position(self.xPark2, self.yPark2, self.rzPark2)
@@ -90,13 +96,19 @@ class map_navigation():
         while choice != 'q':
             choice = self.choose()
             if (choice == '0'):
+                intial_timer = self.timer
                 self.goalReached = self.moveToGoal(self.xHome, self.yHome, self.rzHome)
+                totaltime = self.timer - intial_timer
+                print("Time used : {} secs".format(totaltime))
 
             elif (choice == '1'):
+                intial_timer = self.timer
                 park_pose = self.find_position(self.xPark, self.yPark, self.rzPark)
                 self.goalReached = self.moveToGoal(park_pose[0], park_pose[1], park_pose[2])
                 self.parkState = 0
                 self.ReversePark(self.xPark, self.yPark, self.rzPark)
+                totaltime = self.timer - intial_timer
+                print("Time used : {} secs".format(totaltime))
 
             elif (choice == '2'):
                 park_pose = self.find_position(self.xPark2, self.yPark2, self.rzPark2)
@@ -122,6 +134,7 @@ class map_navigation():
 
     def position_amr(self,odom_data):
         self.pose_amr = [odom_data.pose.pose.position.x,odom_data.pose.pose.position.y,odom_data.pose.pose.orientation]
+        self.timer = odom_data.header.stamp.secs
 
     def find_position(self,xPark,yPark,rzPark):
         pose_park_p1 =[]
